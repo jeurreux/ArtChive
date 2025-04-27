@@ -11,6 +11,11 @@ function App() {
     setEntries ([entry, ...entries]);
   }
 
+  function deleteEntry(id){
+    const updatedEntries = entries.filter(entry => entry.id !== id);
+    setEntries(updatedEntries);
+  }
+
 
   return (
     <div>
@@ -27,6 +32,7 @@ function App() {
             <p><strong>Tags:</strong> {entry.tags.join(', ')}</p>
             <p>{entry.notes}</p>
             <p><em>Added on: {entry.date}</em></p>
+            <button onClick={() => deleteEntry(entry.id)}>Delete</button>
             </div>
         ))}
        </div>
