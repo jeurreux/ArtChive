@@ -10,7 +10,7 @@ function ArtForm({onAddEntry}) {
     function handleSubmit(event){
         event.preventDefault();
 
-        const newEntry = new newEntry(
+        const newEntry = new ArtEntry(
             title,
             imageUrl,
             tags.split(',').map(tag => tag.trim()),
@@ -35,7 +35,7 @@ function ArtForm({onAddEntry}) {
             type="text"
             placeholder='Title'
             value={title}
-            onChange={(e) => setTitle.title(e.target.value)}
+            onChange={(e) => setTitle(e.target.value)}
             />
 
             <input
