@@ -22,17 +22,13 @@
   .login-container {
     position: relative;
     z-index: 10;
+    height: 100vh;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    height: 100vh;
-    padding: 2rem;
     color: white;
     text-shadow: 0 0 5px rgba(0, 0, 0, 0.7);
-    background-color: rgba(0, 0, 0, 0.1);
-    border-radius: 12px;
-    padding: 2rem;
   }
   
   form {
@@ -50,7 +46,7 @@
     font-size: 1rem;
   }
   
-  .loginbutton {
+  .submitbutton {
     padding: 12px;
     border-radius: 8px;
     border: none;
@@ -60,28 +56,17 @@
     cursor: pointer;
     transition: background-color 0.2s;
   }
-
-.signupbutton{
-    color: white;
-    font-weight: bold;
-    cursor: pointer;
-    background-color: transparent;
-    padding: 3px;
-    border-radius: 8px;
-    border: none;
-  }
   
-  .loginbutton:hover {
+  .submitbutton:hover {
     background-color: #20788C;
   }
-
-  .signuploginbutton{
+  
+  .togglebutton{
+    padding: 12px;
+    border-radius: 8px;
+    border: none;
+    background-color: transparent;
     color: white;
     font-weight: bold;
     cursor: pointer;
-    background-color: transparent;
-    padding: 3px;
-    border-radius: 8px;
-    border: none;
   }
-  

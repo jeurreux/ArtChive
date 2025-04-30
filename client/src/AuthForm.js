@@ -1,5 +1,5 @@
 import React from 'react';
-import './LoginForm.css';
+import './AuthForm.css';
 
 function AuthForm({
   isSignup,
@@ -14,12 +14,12 @@ function AuthForm({
     <div className="login-wrapper">
       <div className="video-background">
         <video autoPlay muted loop playsInline>
-          <source src="/login-background.mp4" type="video/mp4" />
+          <source src="/login-videobackground.mp4" type="video/mp4" />
         </video>
       </div>
 
       <div className="login-container">
-        <h2>{isSignup ? 'Sign Up' : 'Log In'}</h2>
+        <h2>{isSignup ? 'ArtChive' : 'ArtChive'}</h2>
 
         <form onSubmit={onSubmit}>
           <input
@@ -34,14 +34,14 @@ function AuthForm({
             value={password}
             onChange={onPasswordChange}
           />
-          <button type="submit">
-            {isSignup ? 'Create Account' : 'Log In'}
+          <button className='submitbutton' type="submit">
+            {isSignup ? 'Create Account' : 'Login'}
           </button>
         </form>
 
         <p>
           {isSignup ? 'Already have an account?' : "Don't have an account?"}{' '}
-          <button onClick={toggleMode}>
+          <button className='togglebutton' onClick={toggleMode}>
             {isSignup ? 'Log In' : 'Sign Up'}
           </button>
         </p>
