@@ -12,12 +12,14 @@ function ArtForm({onAddEntry}) {
     function handleSubmit(event){
         event.preventDefault();
 
-        const newEntry = new ArtEntry(
+        const newEntry = {
             title,
             imageUrl,
-            tags.split(',').map(tag => tag.trim()),
-            notes
-        );
+            tags: tags.split(',').map(tag => tag.trim()),
+            notes,
+            date: new Date().toLocaleDateString()
+          };
+          
 
         onAddEntry(newEntry);
 

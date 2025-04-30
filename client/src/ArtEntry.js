@@ -1,13 +1,13 @@
-class ArtEntry{
-    constructor(title, imageUrl, tags, notes){
-        this.id = Math.floor(Math.random() * 1000000);
-        this.title = title;
-        this.imageUrl = imageUrl;
-        this.tags = tags;
-        this.notes = notes;
-        this.date = new Date().toLocaleDateString();
+import React from 'react';
 
-    }
+function ArtEntry({ entry }) {
+  return (
+    <div className="art-entry">
+      <h3>{entry.title}</h3>
+      <img src={entry.imageUrl} alt={entry.title} />
+      <p>{entry.notes}</p>
+    </div>
+  );
 }
 
 export default ArtEntry;
