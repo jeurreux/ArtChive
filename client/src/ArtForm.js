@@ -1,5 +1,7 @@
 import React, {useState} from 'react';
 import ArtEntry from './ArtEntry';
+import './AuthForm.css';
+
 
 function ArtForm({onAddEntry}) {
     const [title, setTitle] = useState('');
