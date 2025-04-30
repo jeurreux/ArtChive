@@ -1,43 +1,81 @@
 import React, { useState } from 'react';
-import ArtForm from './ArtForm';
-import LoginForm from './LoginForm';
-import './App.css';
+import AuthForm from './AuthForm';
+import './App.css'; // or './LoginForm.css' if styling is here
 
 function App() {
+  const [loggedIn, setLoggedIn] = useState(true);
+  const [showSignup, setShowSignup] = useState(false);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [entries, setEntries] = useState([]);
-  const [loggedIn, setLoggedIn] = useState(false);
+
+  function handleLoginSubmit(e) {
+    e.preventDefault();
+    fetch('http://localhost:5000/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password }),
+    })
+      .then((res) => {
+        if (res.ok) {
+          setLoggedIn(true);
+        } else {
+          alert('Login failed');
+        }
+      })
+      .catch((err) => {
+        console.error('Login error:', err);
+        alert('Something went wrong');
+      });
+    setEmail('');
+    setPassword('');
+  }
+
+  function handleSignupSubmit(e) {
+    e.preventDefault();
+    fetch('http://localhost:5000/signup', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password }),
+    })
+      .then((res) => {
+        if (res.ok) {
+          setLoggedIn(true); // or redirect to login instead
+        } else {
+          alert('Signup failed');
+        }
+      })
+      .catch((err) => {
+        console.error('Signup error:', err);
+        alert('Something went wrong');
+      });
+    setEmail('');
+    setPassword('');
+  }
 
   function addNewEntry(entry) {
     setEntries([entry, ...entries]);
   }
 
-  function handleLogin() {
-    setLoggedIn(true);
+  if (loggedIn) {
+    return (
+      <div>
+        <h1>ArtChive</h1>
+        {/* Add your app content like ArtForm, gallery, etc. */}
+      </div>
+    );
   }
 
   return (
-    <div>
-      {loggedIn ? (
-        <div>
-          <h1>ArtChive</h1>
-          <ArtForm onAddEntry={addNewEntry} />
-          <div>
-            <h2>Archive</h2>
-            {entries.map((entry) => (
-              <div key={entry.id}>
-                <h3>{entry.title}</h3>
-                <img src={entry.imageUrl} alt={entry.title} style={{ width: '300px' }} />
-                <p><strong>Tags:</strong> {entry.tags.join(', ')}</p>
-                <p>{entry.notes}</p>
-                <p><em>Added on: {entry.date}</em></p>
-              </div>
-            ))}
-          </div>
-        </div>
-      ) : (
-        <LoginForm />
-      )}
-    </div>
+    <AuthForm
+      isSignup={showSignup}
+      email={email}
+      password={password}
+      onEmailChange={(e) => setEmail(e.target.value)}
+      onPasswordChange={(e) => setPassword(e.target.value)}
+      onSubmit={showSignup ? handleSignupSubmit : handleLoginSubmit}
+      toggleMode={() => setShowSignup(!showSignup)}
+    />
   );
 }
 
