@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import ArtForm from './ArtForm';
+import SignupForm from './SignupForm';
 import LoginForm from './LoginForm';
 import './App.css';
 
 function App() {
+  const [showSignup, setShowSignup] = useState(false);
   const [entries, setEntries] = useState([]);
   const [loggedIn, setLoggedIn] = useState(false);
 
@@ -12,6 +14,18 @@ function App() {
   }
 
   function handleLogin() {
+    setLoggedIn(true);
+  }
+
+  function switchToSignup(){
+    setShowSignup(true);
+  }
+
+  function switchToLogin(){
+    setShowSignup(false);
+  }
+
+  function handleSignup(){
     setLoggedIn(true);
   }
 
@@ -33,10 +47,13 @@ function App() {
               </div>
             ))}
           </div>
+
         </div>
-      ) : (
-        <LoginForm />
-      )}
+      ) : showSignup ? (
+      <SignupForm onSignup={handleSignup} switchToLogin={switchToLogin} />
+    ) : (
+      <LoginForm onLogin={handleLogin} switchToSignup={switchToSignup} />
+    )}
     </div>
   );
 }
