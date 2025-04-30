@@ -1,9 +1,12 @@
 import React, { useState } from 'react';
 import AuthForm from './AuthForm';
-import './App.css'; // or './LoginForm.css' if styling is here
+import ArtForm from './ArtForm';
+import ArtEntry from './ArtEntry';
+import './App.css';
 
 function App() {
-  const [loggedIn, setLoggedIn] = useState(false);
+  const [loggedIn, setLoggedIn] = useState(true);
+  const [showModal, setShowModal] = useState(false);
   const [showSignup, setShowSignup] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -60,11 +63,38 @@ function App() {
   if (loggedIn) {
     return (
       <div>
+
+        <div className='toppart'>
         <h1>ArtChive</h1>
-        {/* Add your app content like ArtForm, gallery, etc. */}
+        <button className='addbutton' onClick={() => setShowModal(true)}>Add Art</button>
+        <button className="logoutbutton" onClick={() => setLoggedIn(false)}>Logout</button>
+        </div>
+
+        <div className='entries-section'>
+          <h2>Gallery</h2>
+          {entries.map((entry,index) => (
+            <ArtEntry key={index} entry={entry} />
+          ))}
+        </div>
+
+        {showModal && (
+          <div className="modal-overlay">
+            <div className="modal-content">
+              <button className="close-button" onClick={() => setShowModal(false)}>✖</button>
+              <ArtForm onAddEntry={(entry) => {
+                addNewEntry(entry);
+                setShowModal(false); // close after submit
+              }} />
+            </div>
+          </div>
+        )}
+
       </div>
+
+      
     );
   }
+  
 
   return (
     <AuthForm
