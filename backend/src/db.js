@@ -9,7 +9,7 @@ db.exec(`
     title TEXT NOT NULL,
     tags TEXT,
     notes TEXT,
-    url TEXT
+    imageUrl TEXT
     );     
 `);
 
