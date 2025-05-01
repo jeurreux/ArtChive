@@ -147,12 +147,20 @@ function App() {
         <h2 className='h2gallery'>Gallery</h2>
 
         <div className='gallery-container'>
+        {entries.length === 0 ? (
+          <p className="empty-message">Your gallery is empty. Add an entry</p>):(
           <div className='entries-section'>
             {entries.map((entry, index) => (
-              <ArtEntry key={index} entry={entry} onClick={() => setSelectedEntry(entry)} onDelete={deleteEntry} />
-              
-            ))}
+              <ArtEntry
+                key={index}
+                entry={entry}
+                onClick={() => setSelectedEntry(entry)}
+                onDelete={deleteEntry}
+              />))
+            }
           </div>
+      )}
+
         </div>
 
         {selectedEntry && (
