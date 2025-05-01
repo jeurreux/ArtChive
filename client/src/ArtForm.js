@@ -8,6 +8,8 @@ function ArtForm({onAddEntry}) {
     const [imageUrl, setimageUrl] = useState('');
     const [tags, setTags] = useState('');
     const [notes, setNotes] = useState('');
+    const [imageFile, setImageFile] = useState(null);
+
 
     function handleSubmit(event){
         event.preventDefault();
@@ -48,6 +50,17 @@ function ArtForm({onAddEntry}) {
             value={imageUrl}
             onChange={(e) => setimageUrl(e.target.value)}
             />
+
+            <input
+            type="file"
+            accept="image/*"
+            onChange={(e) => {
+                const file = e.target.files[0];
+                setImageFile(file);
+                setimageUrl(URL.createObjectURL(file));
+            }}
+            />
+
 
             <input
             type="text"

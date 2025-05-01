@@ -1,11 +1,9 @@
 import React from 'react';
 
-function ArtEntry({ entry }) {
+function ArtEntry({ entry, onClick }) {
   return (
-    <div className="art-entry">
-      <h3>{entry.title}</h3>
+    <div className="art-entry" onClick={onClick}>
       <img src={entry.imageUrl} alt={entry.title} />
-      <p>{entry.notes}</p>
     </div>
   );
 }

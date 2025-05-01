@@ -11,6 +11,8 @@ function App() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [entries, setEntries] = useState([]);
+  const [selectedEntry, setSelectedEntry] = useState(null);
+
 
   function handleLoginSubmit(e) {
     e.preventDefault();
@@ -57,7 +59,7 @@ function App() {
   }
 
   function addNewEntry(entry) {
-    setEntries([entry, ...entries]);
+    setEntries([...entries, entry]);
   }
 
   if (loggedIn) {
@@ -71,12 +73,30 @@ function App() {
           </div>
         </div>
 
-        <div className='entries-section'>
-          <h2>Gallery</h2>
-          {entries.map((entry, index) => (
-            <ArtEntry key={index} entry={entry} />
-          ))}
+        <h2 className='h2gallery'>Gallery</h2>
+
+        <div className='gallery-container'>
+          <div className='entries-section'>
+            {entries.map((entry, index) => (
+              <ArtEntry key={index} entry={entry} onClick={() => setSelectedEntry(entry)} />
+            ))}
+          </div>
         </div>
+
+        {selectedEntry && (
+          <div className="modal-overlay" onClick={() => setSelectedEntry(null)}>
+            <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <button className="close-button" onClick={() => setSelectedEntry(null)}>✖</button>
+            <h2>{selectedEntry.title}</h2>
+            <img src={selectedEntry.imageUrl} alt={selectedEntry.title} />
+            <p><strong>Notes:</strong> {selectedEntry.notes}</p>
+            <p><strong>Tags:</strong> {selectedEntry.tags.join(', ')}</p>
+            <p><em>Date added: {selectedEntry.date}</em></p>
+
+            </div>
+          </div>
+        )}
+
 
         {showModal && (
           <div className="modal-overlay">
