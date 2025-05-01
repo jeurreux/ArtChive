@@ -26,7 +26,7 @@ function App() {
       .catch((err) => {
         console.error("Error fetching entries:", err);
       });
-  }, []);
+  }, [loggedIn]);
 
 
   function handleLoginSubmit(e) {
@@ -68,6 +68,7 @@ function App() {
       .then((data) => {
         localStorage.setItem("userId", data.userId);
         setLoggedIn(true);
+        loadEntries();
       })
       .catch((err) => {
         console.error('Signup error:', err);
@@ -108,6 +109,21 @@ function App() {
       })
       .catch(err => console.error('Delete error:', err));
   }
+
+  function loadEntries() {
+    const userId = localStorage.getItem("userId");
+    if (!userId) return;
+  
+    fetch(`http://localhost:5050/entries?userId=${userId}`)
+      .then((res) => res.json())
+      .then((data) => {
+        setEntries(data);
+      })
+      .catch((err) => {
+        console.error("Error fetching entries:", err);
+      });
+  }
+  
   
 
   if (loggedIn) {
@@ -117,7 +133,9 @@ function App() {
           <h1>ArtChive</h1>
           <div className='top-buttons'>
           <button className='addbutton' onClick={() => setShowModal(true)}>Add Art</button>
-          <button className="logoutbutton" onClick={() => setLoggedIn(false)}>Logout</button>
+          <button className="logoutbutton" onClick={() => {localStorage.removeItem("userId");
+            setEntries([]);
+            setLoggedIn(false);}}>Logout</button>
           </div>
         </div>
 

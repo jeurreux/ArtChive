@@ -17,7 +17,9 @@ app.get("/status", (req, res) =>
 });
 
 app.post("/entries", (req, res) => 
-{
+{   
+    console.log("NEW ENTRY SUBMISSION:", req.body);
+
     const parsed = artEntrySchema.safeParse(req.body);
 
     if (!parsed.success) {
@@ -26,17 +28,19 @@ app.post("/entries", (req, res) =>
 
     const {title, tags, notes, imageUrl, userId } = parsed.data;
 
-    const result = db.prepare(`
-        INSERT INTO entries (title, tags, notes, imageUrl, userId)
-        VALUES (?, ?, ?, ?, ?)
-    `).run(title, JSON.stringify(tags), notes, imageUrl, userId);
+    const result = db.prepare(`INSERT INTO entries (title, tags, notes, imageUrl, userId)
+        VALUES (?, ?, ?, ?, ?)`).run(title, JSON.stringify(tags), notes, imageUrl, userId);
 
     const newEntry= {
         id: result.lastInsertRowid,
-        title, tags, notes, imageUrl,
+        title, 
+        tags, 
+        notes, 
+        imageUrl,
     };
 
     res.status(201).json(newEntry);
+
 });
 
 app.get("/entries", (req, res) => {
