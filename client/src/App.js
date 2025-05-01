@@ -54,7 +54,7 @@ function App() {
 
   function handleSignupSubmit(e) {
     e.preventDefault();
-    fetch('http://localhost:5000/signup', {
+    fetch('http://localhost:5050/signup', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ username, password }),
@@ -98,6 +98,18 @@ function App() {
       });
   }
 
+  function deleteEntry(id) {
+    fetch(`http://localhost:5050/entries/${id}`, {
+      method: 'DELETE',
+    })
+      .then(res => {
+        if (!res.ok) throw new Error('Delete failed');
+        setEntries(prev => prev.filter(entry => entry.id !== id));
+      })
+      .catch(err => console.error('Delete error:', err));
+  }
+  
+
   if (loggedIn) {
     return (
       <div>
@@ -114,7 +126,8 @@ function App() {
         <div className='gallery-container'>
           <div className='entries-section'>
             {entries.map((entry, index) => (
-              <ArtEntry key={index} entry={entry} onClick={() => setSelectedEntry(entry)} />
+              <ArtEntry key={index} entry={entry} onClick={() => setSelectedEntry(entry)} onDelete={deleteEntry} />
+              
             ))}
           </div>
         </div>
@@ -128,6 +141,7 @@ function App() {
             <p><strong>Notes:</strong> {selectedEntry.notes}</p>
             <p><strong>Tags:</strong> {selectedEntry.tags.join(', ')}</p>
             <p><em>Date added: {selectedEntry.date}</em></p>
+            <button className="delete-button"onClick={() => {deleteEntry(selectedEntry.id);setSelectedEntry(null);}}> Delete </button>
 
             </div>
           </div>
@@ -142,6 +156,7 @@ function App() {
                 addNewEntry(entry);
                 setShowModal(false);
               }} />
+              
             </div>
           </div>
         )}
@@ -154,7 +169,7 @@ function App() {
       isSignup={showSignup}
       username={username}
       password={password}
-      onEmailChange={(e) => setUsername(e.target.value)}
+      onUsernameChange={(e) => setUsername(e.target.value)}
       onPasswordChange={(e) => setPassword(e.target.value)}
       onSubmit={showSignup ? handleSignupSubmit : handleLoginSubmit}
       toggleMode={() => setShowSignup(!showSignup)}

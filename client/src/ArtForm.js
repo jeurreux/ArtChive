@@ -1,5 +1,4 @@
 import React, {useState} from 'react';
-import ArtEntry from './ArtEntry';
 import './AuthForm.css';
 
 
@@ -46,7 +45,7 @@ function ArtForm({onAddEntry}) {
 
             <input
             type="text"
-            placeholder='Image URL'
+            placeholder="Paste an image URL or Instagram post link"
             value={imageUrl}
             onChange={(e) => setimageUrl(e.target.value)}
             />

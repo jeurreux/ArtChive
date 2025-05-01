@@ -3,9 +3,9 @@ import './AuthForm.css';
 
 function AuthForm({
   isSignup,
-  email,
+  username,
   password,
-  onEmailChange,
+  onUsernameChange,
   onPasswordChange,
   onSubmit,
   toggleMode,
@@ -23,14 +23,14 @@ function AuthForm({
 
         <form onSubmit={onSubmit}>
           <input
-            type="email"
-            placeholder="Email"
-            value={email}
-            onChange={onEmailChange}
+            type="text"
+            placeholder="username"
+            value={username}
+            onChange={onUsernameChange}
           />
           <input
             type="password"
-            placeholder="Password"
+            placeholder="password"
             value={password}
             onChange={onPasswordChange}
           />

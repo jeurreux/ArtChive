@@ -3,11 +3,10 @@ import cors from "cors";
 import "dotenv/config";
 import db from "./db.js";
 import { artEntrySchema } from "./validators.js";
+import bcrypt from 'bcryptjs';
 
 const app = express();
 const PORT =  process.env.PORT || 5000;
-const bcrypt = require('bcryptjs');
-const db =require('./db');
 
 app.use(cors());
 app.use(express.json());
@@ -44,7 +43,6 @@ app.get("/entries", (req, res) => {
     const { userId } = req.query;
     const stmt = db.prepare("SELECT * FROM entries WHERE userId = ?");
     const rows = stmt.all(userId);
-
     const entries = rows.map((row) => ({
         id: row.id,
         title: row.title,
@@ -78,6 +76,19 @@ app.post('/login', (req, res) => {
   
     res.json({ userId: user.id });
   });
+
+app.delete('/entries/:id', (req, res) => {
+  const { id } = req.params;
+  try {
+    const stmt = db.prepare("DELETE FROM entries WHERE id = ?");
+    stmt.run(id);
+    res.status(204).send(); // No content
+  } catch (err) {
+    console.error('Delete failed:', err);
+    res.status(500).json({ error: 'Failed to delete entry' });
+  }
+});
+
   
 
 app.post('/signup', (req,res) =>{
