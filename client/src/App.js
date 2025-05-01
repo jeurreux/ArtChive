@@ -63,10 +63,12 @@ function App() {
   if (loggedIn) {
     return (
       <div>
-        <div className='toppart'>
+        <div className='topbar'>
           <h1>ArtChive</h1>
+          <div className='top-buttons'>
           <button className='addbutton' onClick={() => setShowModal(true)}>Add Art</button>
           <button className="logoutbutton" onClick={() => setLoggedIn(false)}>Logout</button>
+          </div>
         </div>
 
         <div className='entries-section'>
