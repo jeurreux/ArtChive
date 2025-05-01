@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import AuthForm from './AuthForm';
 import ArtForm from './ArtForm';
 import ArtEntry from './ArtEntry';
@@ -8,31 +8,47 @@ function App() {
   const [loggedIn, setLoggedIn] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [showSignup, setShowSignup] = useState(false);
-  const [email, setEmail] = useState('');
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [entries, setEntries] = useState([]);
   const [selectedEntry, setSelectedEntry] = useState(null);
 
+  
+  useEffect(() => {
+    const userId =localStorage.getItem("userId");
+    if (!userId) return;
+
+    fetch(`http://localhost:5050/entries?userId=${userId}`)
+      .then((res) => res.json())
+      .then((data) => {
+        setEntries(data);
+      })
+      .catch((err) => {
+        console.error("Error fetching entries:", err);
+      });
+  }, []);
+
 
   function handleLoginSubmit(e) {
     e.preventDefault();
-    fetch('http://localhost:5000/login', {
+    fetch('http://localhost:5050/login', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, password }),
+      body: JSON.stringify({username, password}),
     })
       .then((res) => {
-        if (res.ok) {
-          setLoggedIn(true);
-        } else {
-          alert('Login failed');
-        }
+        if (!res.ok) throw new Error("Login failed");
+        return res.json();
+      })
+      .then((data) => {
+        localStorage.setItem("userId", data.userId);
+        setLoggedIn(true);
       })
       .catch((err) => {
         console.error('Login error:', err);
         alert('Something went wrong');
       });
-    setEmail('');
+    setUsername('');
     setPassword('');
   }
 
@@ -41,25 +57,45 @@ function App() {
     fetch('http://localhost:5000/signup', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, password }),
+      body: JSON.stringify({ username, password }),
     })
       .then((res) => {
-        if (res.ok) {
-          setLoggedIn(true); // or redirect to login instead
-        } else {
-          alert('Signup failed');
+        if (!res.ok) {
+          throw new Error('Signup failed');
         }
+        return res.json();
+      })
+      .then((data) => {
+        localStorage.setItem("userId", data.userId);
+        setLoggedIn(true);
       })
       .catch((err) => {
         console.error('Signup error:', err);
         alert('Something went wrong');
       });
-    setEmail('');
+    setUsername('');
     setPassword('');
   }
 
   function addNewEntry(entry) {
-    setEntries([...entries, entry]);
+    const userId = localStorage.getItem("userId");
+
+    fetch('http://localhost:5050/entries', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ ...entry, userId }),
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error("Failed to add entry");
+        return res.json();
+      })
+      .then((savedEntry) => {
+        setEntries([...entries, savedEntry]);
+      })
+      .catch((err) => {
+        console.error("Error saving entry:", err);
+        alert("Could not save entry. Please try again.");
+      });
   }
 
   if (loggedIn) {
@@ -116,9 +152,9 @@ function App() {
   return (
     <AuthForm
       isSignup={showSignup}
-      email={email}
+      username={username}
       password={password}
-      onEmailChange={(e) => setEmail(e.target.value)}
+      onEmailChange={(e) => setUsername(e.target.value)}
       onPasswordChange={(e) => setPassword(e.target.value)}
       onSubmit={showSignup ? handleSignupSubmit : handleLoginSubmit}
       toggleMode={() => setShowSignup(!showSignup)}
