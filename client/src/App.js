@@ -133,9 +133,14 @@ function App() {
           <h1>ArtChive</h1>
           <div className='top-buttons'>
           <button className='addbutton' onClick={() => setShowModal(true)}>Add Art</button>
-          <button className="logoutbutton" onClick={() => {localStorage.removeItem("userId");
+          <button className="logoutbutton" onClick={() => {
+            const confirmLogout = window.confirm("Are you sure wou want to logout?");
+            if(!confirmLogout) return;
+
+            localStorage.removeItem("userId");
             setEntries([]);
-            setLoggedIn(false);}}>Logout</button>
+            setLoggedIn(false);
+            }}>Logout</button>
           </div>
         </div>
 
@@ -159,7 +164,14 @@ function App() {
             <p><strong>Notes:</strong> {selectedEntry.notes}</p>
             <p><strong>Tags:</strong> {selectedEntry.tags.join(', ')}</p>
             <p><em>Date added: {selectedEntry.date}</em></p>
-            <button className="delete-button"onClick={() => {deleteEntry(selectedEntry.id);setSelectedEntry(null);}}> Delete </button>
+            <button className="delete-button"
+            onClick={() => {
+              const confirmDelete = window.confirm("Delete this entry permanently");
+              if (!confirmDelete) return;
+
+              deleteEntry(selectedEntry.id);setSelectedEntry(null);
+              setSelectedEntry(null);
+              }}> Delete </button>
 
             </div>
           </div>
