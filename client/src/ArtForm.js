@@ -75,7 +75,7 @@ function ArtForm({onAddEntry}) {
             onChange={(e) => setNotes(e.target.value)}
             />
 
-            <button type = "submit">Add Entry</button>
+            <button className='submit-entry-button' type = "submit">Add Entry</button>
 
         </form>
 

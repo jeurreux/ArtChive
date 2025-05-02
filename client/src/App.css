@@ -49,7 +49,6 @@ body, html{
 }
 .modal-content {
   max-width: 500px;
-  width: 90%;
   padding: 1rem;
   border-radius: 12px;
   background: white;
@@ -154,6 +153,7 @@ body, html{
   width: 100%;
   max-width: 300px;
   aspect-ratio: 1 /1;
+  position: relative;
 }
 
 .art-entry img {
@@ -198,6 +198,36 @@ body, html{
   background-color: #a00;
 }
 
+.edit-button{
+  background: none;
+  border: 1px solid #111;
+  padding: 0.4rem 0.75rem;
+  border-radius: 6px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.save-button {
+  margin-top: 1rem;
+  background: none;
+  border: 1px solid #111;
+  padding: 0.4rem 0.75rem;
+  border-radius: 6px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.save-button:hover {
+  background: #111;
+  color: white;
+}
+
+.edit-button:hover{
+  background-color: #005fa3;
+}
+
+
 .empty-message {
   text-align: center;
   font-size: 1.2rem;
@@ -234,3 +264,78 @@ body, html{
   opacity: 0.5;
   aspect-ratio: 1 /1;
 }
+
+.modal-content label {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  font-weight: bold;
+  margin: 0.5rem 0;
+  width: 100%;
+  font-size: 0.95rem;
+}
+
+.modal-content input[type="text"],
+.modal-content textarea {
+  width: 100%;
+  padding: 0.5rem;
+  margin-top: 0.25rem;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  box-sizing: border-box;
+}
+
+.edit-card {
+  background-color: rgba(255, 255, 255, 0.95);
+  padding: 1rem;
+  border-radius: 12px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+  max-width: 400px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.edit-card input,
+.edit-card textarea {
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.9rem;
+  width: 100%;
+  background: #f9f9f9;
+}
+
+.edit-card label {
+  font-size: 0.85rem;
+  color: #444;
+  font-weight: 500;
+  margin-bottom: -0.5rem;
+}
+
+.entry-checkbox {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  z-index: 2;
+  transform: scale(1.2);
+}
+
+.top-buttons button {
+  margin-left: 8px;
+}
+
+.art-entry-wrapper.selected .art-entry::after {
+  content: "";
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background-color: rgba(0, 123, 255, 0.2);
+  border-radius: 12px;
+  pointer-events: none; 
+}
+
+
+
