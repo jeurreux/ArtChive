@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import AuthForm from './AuthForm';
 import ArtForm from './ArtForm';
 import ArtEntry from './ArtEntry';
+import Entry from './models/Entry';
+
 import './App.css';
 
 function App() {
@@ -34,7 +36,9 @@ function App() {
 
     fetch(`http://localhost:5050/entries?userId=${userId}`)
       .then((res) => res.json())
-      .then((data) => setEntries(data))
+      .then((data) => {
+        const wrapped = data.map(item => new Entry(item));
+        setEntries(wrapped)})
       .catch((err) => console.error("Error fetching entries:", err));
   }, [selectedEntry, loggedIn]);
 
@@ -79,26 +83,25 @@ function App() {
       userId,
       date: new Date().toISOString()
     };
-
+  
     fetch('http://localhost:5050/entries', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(newEntry),
     })
       .then(res => res.json())
-      .then(savedEntry => setEntries([...entries, savedEntry]))
+      .then(savedEntry => {
+        const wrapped = new Entry(savedEntry);
+        setEntries([...entries, wrapped]);
+      })
       .catch(err => console.error("Error saving entry:", err));
   }
+  
 
   function deleteEntry(id) {
     fetch(`http://localhost:5050/entries/${id}`, { method: 'DELETE' })
       .then(() => setEntries(entries.filter(entry => entry.id !== id)))
       .catch(err => console.error("Delete failed:", err));
-  }
-
-  function formatDate(dateString) {
-    const d = new Date(dateString);
-    return d.toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' });
   }
 
   function handleSaveEdit() {
@@ -229,7 +232,7 @@ function App() {
           setSelectedEntry(null);
           setEditMode(false);
         }}>
-          <div className="modal-content" onClick={e => e.stopPropagation()}>
+          <div className="modal-content" onClick ={e => e.stopPropagation()}>
             <button className="close-button" onClick={() => {
               setSelectedEntry(null);
               setEditMode(false);
@@ -241,7 +244,7 @@ function App() {
                 <img src={selectedEntry.imageUrl} alt={selectedEntry.title} />
                 <p><strong>Notes:</strong> {selectedEntry.notes}</p>
                 <p><strong>Tags:</strong> {selectedEntry.tags.join(', ')}</p>
-                <p><em>Date added: {selectedEntry.date ? formatDate(selectedEntry.date) : 'N/A'}</em></p>
+                <p><em>Date added: {selectedEntry.getFormattedDate?.() ?? 'N/A'}</em></p>
                 <button className="edit-button" onClick={() => setEditMode(true)}>Edit</button>
                 <button className="delete-button" onClick={() => {
                   if (window.confirm("Delete this entry permanently?")) {
