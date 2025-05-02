@@ -26,10 +26,12 @@ app.post("/entries", (req, res) =>
         return res.status(400).json({error: parsed.error.flatten() });
     }
 
-    const {title, tags, notes, imageUrl, userId } = parsed.data;
+    const {title, tags, notes, imageUrl, userId, date } = parsed.data;
 
-    const result = db.prepare(`INSERT INTO entries (title, tags, notes, imageUrl, userId)
-        VALUES (?, ?, ?, ?, ?)`).run(title, JSON.stringify(tags), notes, imageUrl, userId);
+    const result = db.prepare(`INSERT INTO entries (title, tags, notes, imageUrl, userId, date)
+      VALUES (?, ?, ?, ?, ?, ?)
+    `).run(title, JSON.stringify(tags), notes, imageUrl, userId, date);
+    
 
     const newEntry= {
         id: result.lastInsertRowid,
@@ -37,6 +39,7 @@ app.post("/entries", (req, res) =>
         tags, 
         notes, 
         imageUrl,
+        date,
     };
 
     res.status(201).json(newEntry);
@@ -53,6 +56,7 @@ app.get("/entries", (req, res) => {
         tags: JSON.parse(row.tags),
         notes: row.notes,
         imageUrl: row.imageUrl,
+        date:row.date,
     }));
 
     res.json(entries);
@@ -86,7 +90,7 @@ app.delete('/entries/:id', (req, res) => {
   try {
     const stmt = db.prepare("DELETE FROM entries WHERE id = ?");
     stmt.run(id);
-    res.status(204).send(); // No content
+    res.status(204).send();
   } catch (err) {
     console.error('Delete failed:', err);
     res.status(500).json({ error: 'Failed to delete entry' });

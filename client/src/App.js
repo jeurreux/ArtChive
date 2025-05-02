@@ -92,11 +92,17 @@ function App() {
 
   function addNewEntry(entry) {
     const userId = localStorage.getItem("userId");
-
+    const newEntry = {
+      ...entry,
+      userId,
+      date: new Date().toISOString()
+      
+    };
     fetch('http://localhost:5050/entries', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ ...entry, userId }),
+      body: JSON.stringify(newEntry),
+
     })
       .then((res) => {
         if (!res.ok) throw new Error("Failed to add entry");
@@ -105,10 +111,12 @@ function App() {
       .then((savedEntry) => {
         setEntries([...entries, savedEntry]);
       })
+      
       .catch((err) => {
         console.error("Error saving entry:", err);
         alert("Could not save entry. Please try again.");
       });
+      
   }
 
   function deleteEntry(id) {
@@ -195,21 +203,29 @@ function App() {
 
             {editMode ? (
               <>
-                <input
-                  type='text'
-                  value={editTitle}
-                  onChange={(e) => setEditTitle(e.target.value)}
-                />
-                <textarea
-                  value={editNotes}
-                  onChange={(e) => setEditNotes(e.target.value)}
-                />
-                <input
-                  type='text'
-                  value={editTags}
-                  onChange={(e) => setEditTags(e.target.value)}
-                  placeholder='tag1,tag2'
-                />
+                <label>
+                  Title:
+                  <input
+                    type="text"
+                    value={editTitle}
+                    onChange={(e) => setEditTitle(e.target.value)}
+                  />
+                </label>
+                <label>
+                  Notes:
+                  <textarea
+                    value={editNotes}
+                    onChange={(e) => setEditNotes(e.target.value)}
+                  />
+                </label>
+                <label>
+                  Tags (comma-separated):
+                  <input
+                    type="text"
+                    value={editTags}
+                    onChange={(e) => setEditTags(e.target.value)}
+                  />
+                </label>
                 <button
                   className="save-button"
                   onClick={() => {

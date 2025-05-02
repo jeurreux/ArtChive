@@ -45,7 +45,7 @@ function ArtForm({onAddEntry}) {
 
             <input
             type="text"
-            placeholder="Paste an image URL or Instagram post link"
+            placeholder="Paste an image URL"
             value={imageUrl}
             onChange={(e) => setimageUrl(e.target.value)}
             />
