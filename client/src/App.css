@@ -337,5 +337,42 @@ body, html{
   pointer-events: none; 
 }
 
+.select-mode-button,
+.delete-selected,
+.exit-select {
+  padding: 10px 16px;
+  font-weight: bold;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.select-mode-button {
+  background-color: #111;
+  color: white;
+}
+
+.select-mode-button:hover {
+  background-color: #333;
+}
+
+.delete-selected {
+  background-color: darkred;
+  color: white;
+}
+
+.delete-selected:hover {
+  background-color: #a00;
+}
+
+.exit-select {
+  background-color: #ccc;
+  color: #222;
+}
+
+.exit-select:hover {
+  background-color: #aaa;
+}
 
 

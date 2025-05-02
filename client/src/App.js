@@ -196,12 +196,15 @@ function App() {
 
       <h2 className='h2gallery'>Gallery</h2>
       <div className='gallery-container'>
+        {entries.length === 0 && (
+          <p className='empty-message'>Your gallery is empty. Add some art.</p>
+        )}
         <div className="entries-section">
           <div className="art-entry add-box" onClick={() => setShowModal(true)}>
             <span className="plus-icon">＋</span>
           </div>
           {entries.length === 0
-            ? placeholderArray.map(i => <div key={i} className="art-entry placeholder" />)
+            ? placeholderArray.map(i => (<div key={i} className="art-entry placeholder" />))
             : entries.map(entry => (
               <div
                 key={entry.id}
