@@ -153,6 +153,7 @@ body, html{
   min-height: auto;
   width: 100%;
   max-width: 300px;
+  aspect-ratio: 1 /1;
 }
 
 .art-entry img {
@@ -176,9 +177,10 @@ body, html{
 
 .entries-section {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-  gap: 1rem;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 0.5rem;
   padding: 1rem;
+  justify-items: center;
 }
 
 .delete-button {
@@ -204,3 +206,31 @@ body, html{
   font-style: italic;
 }
 
+.add-box {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #f3f3f3;
+  color: #555;
+  font-size: 3rem;
+  cursor: pointer;
+  border: 2px dashed #ccc;
+  border-radius: 12px;
+  transition: background-color 0.2s ease;
+  aspect-ratio: 1/1;
+}
+
+.add-box:hover {
+  background-color: #eee;
+}
+
+.plus-icon {
+  font-size: 3rem;
+  user-select: none;
+}
+
+.placeholder {
+  background-color: #f0f0f0;
+  opacity: 0.5;
+  aspect-ratio: 1 /1;
+}

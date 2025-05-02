@@ -93,7 +93,19 @@ app.delete('/entries/:id', (req, res) => {
   }
 });
 
-  
+app.patch('/entries/:id', (req, res) => {
+  const { title, notes, tags } = req.body;
+  const id = req.params.id;
+
+  db.prepare(`
+    UPDATE entries
+    SET title = ?, notes = ?, tags = ?
+    WHERE id = ?
+  `).run(title, notes, JSON.stringify(tags), id);
+
+  res.json({ id, title, notes, tags });
+});
+
 
 app.post('/signup', (req,res) =>{
     const {username, password} = req.body;

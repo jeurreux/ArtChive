@@ -5,19 +5,30 @@ import ArtEntry from './ArtEntry';
 import './App.css';
 
 function App() {
-  const [loggedIn, setLoggedIn] = useState(true);
+  const [loggedIn, setLoggedIn] = useState(!!localStorage.getItem("userId"));
   const [showModal, setShowModal] = useState(false);
   const [showSignup, setShowSignup] = useState(false);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [entries, setEntries] = useState([]);
   const [selectedEntry, setSelectedEntry] = useState(null);
+  const placeholderCount = 7;
+  const placeholderArray = Array.from({ length: placeholderCount }, (_, i) => i);
+  const [editMode, setEditMode] = useState(false);
+  const [editTitle, setEditTitle] = useState('');
+  const [editNotes, setEditNotes] = useState('');
+  const [editTags, setEditTags] = useState('');
 
-  
+
   useEffect(() => {
     const userId =localStorage.getItem("userId");
     if (!userId) return;
 
+    if (selectedEntry){
+      setEditTitle(selectedEntry.title);
+      setEditNotes(selectedEntry.notes);
+      setEditTags(selectedEntry.tags.join(', '));
+    }
     fetch(`http://localhost:5050/entries?userId=${userId}`)
       .then((res) => res.json())
       .then((data) => {
@@ -26,7 +37,7 @@ function App() {
       .catch((err) => {
         console.error("Error fetching entries:", err);
       });
-  }, [loggedIn]);
+  }, [selectedEntry, loggedIn]);
 
 
   function handleLoginSubmit(e) {
@@ -43,6 +54,7 @@ function App() {
       .then((data) => {
         localStorage.setItem("userId", data.userId);
         setLoggedIn(true);
+        loadEntries();
       })
       .catch((err) => {
         console.error('Login error:', err);
@@ -125,6 +137,7 @@ function App() {
   }
   
   
+  
 
   if (loggedIn) {
     return (
@@ -134,7 +147,7 @@ function App() {
           <div className='top-buttons'>
           <button className='addbutton' onClick={() => setShowModal(true)}>Add Art</button>
           <button className="logoutbutton" onClick={() => {
-            const confirmLogout = window.confirm("Are you sure wou want to logout?");
+            const confirmLogout = window.confirm("Are you sure you want to logout?");
             if(!confirmLogout) return;
 
             localStorage.removeItem("userId");
@@ -148,36 +161,106 @@ function App() {
 
         <div className='gallery-container'>
         {entries.length === 0 ? (
-          <p className="empty-message">Your gallery is empty. Add an entry</p>):(
-          <div className='entries-section'>
+          <div className="entries-section">
+            <div className="art-entry add-box" onClick={() => setShowModal(true)}>
+              <span className="plus-icon">＋</span>
+            </div>
+            {placeholderArray.map((i) => (
+              <div key={i} className="art-entry placeholder" />
+            ))}
+          </div>
+          ) : (
+          <div className="entries-section">
+            <div className="art-entry add-box" onClick={() => setShowModal(true)}>
+              <span className="plus-icon">＋</span>
+            </div>
             {entries.map((entry, index) => (
               <ArtEntry
                 key={index}
                 entry={entry}
                 onClick={() => setSelectedEntry(entry)}
                 onDelete={deleteEntry}
-              />))
-            }
+              />
+            ))}
           </div>
-      )}
+        )}
 
-        </div>
+          </div>
+
 
         {selectedEntry && (
           <div className="modal-overlay" onClick={() => setSelectedEntry(null)}>
             <div className="modal-content" onClick={(e) => e.stopPropagation()}>
             <button className="close-button" onClick={() => setSelectedEntry(null)}>✖</button>
-            <h2>{selectedEntry.title}</h2>
-            <img src={selectedEntry.imageUrl} alt={selectedEntry.title} />
-            <p><strong>Notes:</strong> {selectedEntry.notes}</p>
-            <p><strong>Tags:</strong> {selectedEntry.tags.join(', ')}</p>
-            <p><em>Date added: {selectedEntry.date}</em></p>
+
+            {editMode ? (
+              <>
+                <input
+                  type='text'
+                  value={editTitle}
+                  onChange={(e) => setEditTitle(e.target.value)}
+                />
+                <textarea
+                  value={editNotes}
+                  onChange={(e) => setEditNotes(e.target.value)}
+                />
+                <input
+                  type='text'
+                  value={editTags}
+                  onChange={(e) => setEditTags(e.target.value)}
+                  placeholder='tag1,tag2'
+                />
+                <button
+                  className="save-button"
+                  onClick={() => {
+                    const updatedEntry = {
+                      title: editTitle,
+                      notes: editNotes,
+                      tags: editTags.split(',').map(tag => tag.trim())
+                    };
+
+                    fetch(`http://localhost:5050/entries/${selectedEntry.id}`, {
+                      method: 'PATCH',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify(updatedEntry)
+                    })
+                      .then((res) => {
+                        if (!res.ok) throw new Error("Edit failed");
+                        return res;
+                      })
+                      .then(() => {
+                        setEntries(prev => prev.map(entry =>
+                          entry.id === selectedEntry.id
+                            ? { ...entry, ...updatedEntry }
+                            : entry
+                        ));
+                        setEditMode(false);
+                        setSelectedEntry(null);
+                      })
+                      .catch(err => console.error('Edit error:', err));
+                  }}
+                >
+                  Save
+                </button>
+              </>
+            ) : (
+              <>
+                <h2>{selectedEntry.title}</h2>
+                <img src={selectedEntry.imageUrl} alt={selectedEntry.title} />
+                <p><strong>Notes:</strong> {selectedEntry.notes}</p>
+                <p><strong>Tags:</strong> {selectedEntry.tags.join(', ')}</p>
+                <p><em>Date added: {selectedEntry.date}</em></p>
+                <button className="edit-button" onClick={() => setEditMode(true)}>Edit</button>
+              </>
+            )}
+
+
             <button className="delete-button"
             onClick={() => {
               const confirmDelete = window.confirm("Delete this entry permanently");
               if (!confirmDelete) return;
 
-              deleteEntry(selectedEntry.id);setSelectedEntry(null);
+              deleteEntry(selectedEntry.id);
               setSelectedEntry(null);
               }}> Delete </button>
 
