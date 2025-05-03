@@ -395,3 +395,33 @@ body, html{
   border-color: #666666;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 }
+
+.filter-tags
+{
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+  padding: 16px;
+}
+
+.filter-btn
+{
+  padding: 6px 13px;
+  border: 1px solid #333;
+  background: white;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+
+.filter-btn:hover
+{
+  background: #a078bb;
+}
+
+.filter-btn.active
+{
+  background: #333;
+  color: white;
+}

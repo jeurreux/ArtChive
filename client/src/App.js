@@ -22,7 +22,8 @@ function App() {
   const placeholderArray = Array.from({ length: placeholderCount }, (_, i) => i);
   const [selectMode, setSelectMode] = useState(false);
   const [selectedIds, setSelectedIds] = useState([]);
-  const [searchQuery, setSearchQuery] =useState('');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [activeFilter, setActiveFilter] = useState(null);
 
 
   useEffect(() => {
@@ -174,8 +175,15 @@ function App() {
   const tagMatch = entry.tags.some(tag =>
     tag.toLowerCase().includes(searchQuery.toLowerCase())
   );
-  return titleMatch || tagMatch;
+
+  const matchesSearch = titleMatch || tagMatch;
+  const matchesFilter = !activeFilter || entry.tags.includes(activeFilter);
+
+  return matchesSearch && matchesFilter;
   });
+
+  const allTags = [...new Set(entries.flatMap(entry => entry.tags))];
+  
   return (
     <div>
       <div className="topbar">
@@ -214,6 +222,15 @@ function App() {
         {entries.length === 0 && (
           <p className='empty-message'>Your gallery is empty. Add some art.</p>
         )}
+        <div className="filter-tags">
+          {allTags.map(tag => (
+            <button key={tag} className={activeFilter === tag ? "filter-btn active" : "filter-btn"}
+            onClick={() => setActiveFilter(tag === activeFilter ? null : tag)} >
+              {tag}
+            </button>
+          ))}
+        </div>
+
         <div className="entries-section">
           <div className="art-entry add-box" onClick={() => setShowModal(true)}>
             <span className="plus-icon">＋</span>
