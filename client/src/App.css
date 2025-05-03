@@ -375,4 +375,23 @@ body, html{
   background-color: #aaa;
 }
 
+.search-bar
+{
+  display: block;
+  margin: 16px auto;
+  padding: 10px 16px;
+  width: 80%;
+  max-width: 400px;
+  font-size: 16px;
+  border-radius: 8px;
+  border: 1px solid #cccccc;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+  transition: all 0.2s ease;
+}
 
+.search-bar:focus
+{
+  outline: none;
+  border-color: #666666;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}

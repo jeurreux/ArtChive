@@ -22,6 +22,7 @@ function App() {
   const placeholderArray = Array.from({ length: placeholderCount }, (_, i) => i);
   const [selectMode, setSelectMode] = useState(false);
   const [selectedIds, setSelectedIds] = useState([]);
+  const [searchQuery, setSearchQuery] =useState('');
 
 
   useEffect(() => {
@@ -168,6 +169,13 @@ function App() {
     );
   }
 
+  const filteredEntries = entries.filter(entry => {
+  const titleMatch = entry.title.toLowerCase().includes(searchQuery.toLowerCase());
+  const tagMatch = entry.tags.some(tag =>
+    tag.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+  return titleMatch || tagMatch;
+  });
   return (
     <div>
       <div className="topbar">
@@ -198,7 +206,11 @@ function App() {
       </div>
 
       <h2 className='h2gallery'>Gallery</h2>
-      <div className='gallery-container'>
+      <input type="text" placeholder="search by title or tag" 
+      value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)}
+      className="search-bar" />
+
+<div className='gallery-container'>
         {entries.length === 0 && (
           <p className='empty-message'>Your gallery is empty. Add some art.</p>
         )}
@@ -208,7 +220,7 @@ function App() {
           </div>
           {entries.length === 0
             ? placeholderArray.map(i => (<div key={i} className="art-entry placeholder" />))
-            : entries.map(entry => (
+            : filteredEntries.map(entry => (
               <div
                 key={entry.id}
                 className={`art-entry-wrapper ${selectMode && selectedIds.includes(entry.id) ? "selected" : ""}`}
