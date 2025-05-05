@@ -4,9 +4,31 @@ import "dotenv/config";
 import db from "./db.js";
 import { artEntrySchema } from "./validators.js";
 import bcrypt from 'bcryptjs';
+import jwt from "jsonwebtoken";
 
+const { verify } = jwt;
 const app = express();
 const PORT =  process.env.PORT || 5000;
+const JWT_SECRET = process.env.JWT_SECRET;
+
+function verifyToken(req, res, next) 
+{
+    const authHeader = req.headers.authorization;
+    if (!authHeader || !authHeader.startsWith("Bearer "))
+    {
+        return res.status(401).json({error: "Missing or malformed token"});
+    }
+
+    const token = authHeader.split(" ")[1];
+    try
+    {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        req.user = decoded;
+        next();
+    }catch(err){
+        res.status(401).json({error: "Invalid or expired token"});
+    }
+}
 
 app.use(cors());
 app.use(express.json());
@@ -16,7 +38,7 @@ app.get("/status", (req, res) =>
     res.send("server is good");   
 });
 
-app.post("/entries", (req, res) => 
+app.post("/entries", verifyToken, (req, res) => 
 {   
     console.log("NEW ENTRY SUBMISSION:", req.body);
 
@@ -26,11 +48,11 @@ app.post("/entries", (req, res) =>
         return res.status(400).json({error: parsed.error.flatten() });
     }
 
-    const {title, tags, notes, imageUrl, userId, date } = parsed.data;
+    const {title, tags, notes, imageUrl, date } = parsed.data;
 
     const result = db.prepare(`INSERT INTO entries (title, tags, notes, imageUrl, userId, date)
       VALUES (?, ?, ?, ?, ?, ?)
-    `).run(title, JSON.stringify(tags), notes, imageUrl, userId, date);
+    `).run(title, JSON.stringify(tags), notes, imageUrl, req.user.userId, date);
     
 
     const newEntry= {
@@ -46,8 +68,8 @@ app.post("/entries", (req, res) =>
 
 });
 
-app.get("/entries", (req, res) => {
-    const { userId } = req.query;
+app.get("/entries", verifyToken, (req, res) => {
+    const userId = req.user.userId;
     const stmt = db.prepare("SELECT * FROM entries WHERE userId = ?");
     const rows = stmt.all(userId);
     const entries = rows.map((row) => ({
@@ -81,25 +103,41 @@ app.post('/login', (req, res) => {
     if (!passwordMatch) {
       return res.status(401).json({ error: "Invalid username or password" });
     }
-  
-    res.json({ userId: user.id });
+
+    const token = jwt.sign({ userId: user.id, username: user.username }, JWT_SECRET, {
+        expiresIn: "1h"
+    });
+
+    res.json({ token });
   });
 
-app.delete('/entries/:id', (req, res) => {
+app.delete('/entries/:id', verifyToken, (req, res) => {
   const { id } = req.params;
-  try {
-    const stmt = db.prepare("DELETE FROM entries WHERE id = ?");
-    stmt.run(id);
-    res.status(204).send();
-  } catch (err) {
-    console.error('Delete failed:', err);
-    res.status(500).json({ error: 'Failed to delete entry' });
+  const  userId = req.user.userId;
+
+  const entry = db.prepare("SELECT * FROM entries WHERE id = ?").get(id);
+  if (!entry)
+  {
+    return res.status(404).json({error: "Entry not found"});
   }
+  if (entry.userId !== userId)
+  {
+    return res.status(403).json({error: "You cannot delete this entry"});
+  }
+  db.prepare("DELETE FROM entries WHERE id = ?"). run(id);
+  res.status(204).send();
 });
 
-app.patch('/entries/:id', (req, res) => {
+app.patch('/entries/:id', verifyToken, (req, res) => {
   const { title, notes, tags } = req.body;
   const id = req.params.id;
+  const userId = req.user.userId;
+
+  const entry = db.prepare("SELECT * FROM entries WHERE id = ?").get(id);
+  if (!entry || entry.userId !== userId)
+  {
+    return res.status(403).json({error: "Forbidden"});
+  }
 
   db.prepare(`
     UPDATE entries

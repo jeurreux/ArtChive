@@ -7,7 +7,7 @@ import Entry from './models/Entry';
 import './App.css';
 
 function App() {
-  const [loggedIn, setLoggedIn] = useState(!!localStorage.getItem("userId"));
+  const [loggedIn, setLoggedIn] = useState(!!localStorage.getItem("token"));
   const [showModal, setShowModal] = useState(false);
   const [showSignup, setShowSignup] = useState(false);
   const [username, setUsername] = useState('');
@@ -27,8 +27,8 @@ function App() {
 
 
   useEffect(() => {
-    const userId = localStorage.getItem("userId");
-    if (!userId) return;
+    const token = localStorage.getItem("token");
+    if (!token) return;
 
     if (selectedEntry) {
       setEditTitle(selectedEntry.title);
@@ -36,7 +36,12 @@ function App() {
       setEditTags(selectedEntry.tags.join(', '));
     }
 
-    fetch(`http://localhost:5050/entries?userId=${userId}`)
+    fetch('http://localhost:5050/entries', {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    })
+
       .then((res) => res.json())
       .then((data) => {
         const wrapped = data.map(item => new Entry(item));
@@ -53,7 +58,7 @@ function App() {
     })
       .then(res => res.ok ? res.json() : Promise.reject())
       .then(data => {
-        localStorage.setItem("userId", data.userId);
+        localStorage.setItem("token", data.token);
         setLoggedIn(true);
       })
       .catch(() => alert('Login failed'));
@@ -70,7 +75,7 @@ function App() {
     })
       .then(res => res.ok ? res.json() : Promise.reject())
       .then(data => {
-        localStorage.setItem("userId", data.userId);
+        localStorage.setItem("token", data.token);
         setLoggedIn(true);
       })
       .catch(() => alert('Signup failed'));
@@ -79,16 +84,17 @@ function App() {
   }
 
   function addNewEntry(entry) {
-    const userId = localStorage.getItem("userId");
+    const token = localStorage.getItem("token");
     const newEntry = {
       ...entry,
-      userId,
       date: new Date().toISOString()
     };
   
     fetch('http://localhost:5050/entries', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', 
+                 'Authorization': `Bearer ${token}`
+      },
       body: JSON.stringify(newEntry),
     })
       .then(res => res.json())
@@ -101,7 +107,13 @@ function App() {
   
 
   function deleteEntry(id) {
-    fetch(`http://localhost:5050/entries/${id}`, { method: 'DELETE' })
+    const token = localStorage.getItem("token");
+    fetch(`http://localhost:5050/entries/${id}`, { 
+      method: 'DELETE',
+      headers: {
+        Authorization: `Bearer ${token}`
+      } 
+    })
       .then(() => setEntries(entries.filter(entry => entry.id !== id)))
       .catch(err => console.error("Delete failed:", err));
   }
@@ -113,9 +125,12 @@ function App() {
       tags: editTags.split(',').map(tag => tag.trim()),
     };
 
+    const token = localStorage.getItem("token");
     fetch(`http://localhost:5050/entries/${selectedEntry.id}`, {
       method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json',
+                 'Authorization': `Bearer ${token}`
+       },
       body: JSON.stringify(updatedEntry),
     })
       .then(res => res.ok ? res.json() : Promise.reject())
@@ -141,9 +156,15 @@ function App() {
     const confirmed = window.confirm("Are you sure you want to delete these entries?");
     if (!confirmed) return;
   
+    const token = localStorage.getItem("token");
     Promise.all(
       selectedIds.map(id =>
-        fetch(`http://localhost:5050/entries/${id}`, { method: 'DELETE' })
+        fetch(`http://localhost:5050/entries/${id}`, { 
+          method: 'DELETE',
+          headers: {
+            Authorization: `Bearer ${token}`
+          } 
+        })
       )
     )
       .then(() => {
@@ -205,7 +226,7 @@ function App() {
 
           <button className="logoutbutton" onClick={() => {
             if (window.confirm("Are you sure you want to logout?")) {
-              localStorage.removeItem("userId");
+              localStorage.removeItem("token");
               setLoggedIn(false);
               setEntries([]);
             }
