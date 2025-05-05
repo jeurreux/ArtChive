@@ -183,7 +183,7 @@ function App() {
   });
 
   const allTags = [...new Set(entries.flatMap(entry => entry.tags))];
-  
+
   return (
     <div>
       <div className="topbar">
@@ -237,10 +237,11 @@ function App() {
           </div>
           {entries.length === 0
             ? placeholderArray.map(i => (<div key={i} className="art-entry placeholder" />))
-            : filteredEntries.map(entry => (
+            : filteredEntries.map((entry,index) => (
               <div
                 key={entry.id}
                 className={`art-entry-wrapper ${selectMode && selectedIds.includes(entry.id) ? "selected" : ""}`}
+                style={{ animationDelay: `${index * 0.80}s`}}
                 onClick={() => {
                   if (selectMode) {
                     toggleSelection(entry.id);
