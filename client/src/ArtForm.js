@@ -16,7 +16,7 @@ function ArtForm({onAddEntry}) {
         const newEntry = {
             title,
             imageUrl,
-            tags: tags.split(',').map(tag => tag.trim()),
+            tags: tags.split(',').map(tag => tag.trim()).filter(tag => tag.length > 0),
             notes,
             date: new Date().toLocaleDateString()
           };
