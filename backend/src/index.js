@@ -22,7 +22,7 @@ function verifyToken(req, res, next)
     const token = authHeader.split(" ")[1];
     try
     {
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        const decoded = jwt.verify(token, JWT_SECRET);
         req.user = decoded;
         next();
     }catch(err){
@@ -75,7 +75,7 @@ app.get("/entries", verifyToken, (req, res) => {
     const entries = rows.map((row) => ({
         id: row.id,
         title: row.title,
-        tags: JSON.parse(row.tags),
+        tags: row.tags ? JSON.parse(row.tags) : [],
         notes: row.notes,
         imageUrl: row.imageUrl,
         date:row.date,
@@ -124,7 +124,7 @@ app.delete('/entries/:id', verifyToken, (req, res) => {
   {
     return res.status(403).json({error: "You cannot delete this entry"});
   }
-  db.prepare("DELETE FROM entries WHERE id = ?"). run(id);
+  db.prepare("DELETE FROM entries WHERE id = ?").run(id);
   res.status(204).send();
 });
 

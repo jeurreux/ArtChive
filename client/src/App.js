@@ -27,27 +27,41 @@ function App() {
 
 
   useEffect(() => {
+    if (!loggedIn) return;
     const token = localStorage.getItem("token");
-    if (!token) return;
-
-    if (selectedEntry) {
-      setEditTitle(selectedEntry.title);
-      setEditNotes(selectedEntry.notes);
-      setEditTags(selectedEntry.tags.join(', '));
-    }
 
     fetch('http://localhost:5050/entries', {
       headers: {
         Authorization: `Bearer ${token}`
       }
     })
-
-      .then((res) => res.json())
+      .then((res) => res.ok ? res.json() : Promise.reject(res)) 
       .then((data) => {
+        if (!Array.isArray(data)) 
+        throw new Error("Expected array but got: " + JSON.stringify(data));
         const wrapped = data.map(item => new Entry(item));
-        setEntries(wrapped)})
-      .catch((err) => console.error("Error fetching entries:", err));
-  }, [selectedEntry, loggedIn]);
+        setEntries(wrapped);
+      })
+      .catch((err) => {
+        if(err.status === 401) {
+          alert("Session expired. Please log in again.");
+          localStorage.removeItem("toke");
+          setLoggedIn(false);
+          setEntries([]);
+        }else{
+          console.error("Error fetching entries:", err);
+  }
+});
+}, [loggedIn]);
+
+useEffect(() => {
+  if (selectedEntry)
+  {
+    setEditTitle(selectedEntry.title);
+    setEditNotes(selectedEntry.notes);
+    setEditTags(selectedEntry.tags.join(', '));
+  }
+}, [selectedEntry]);
 
   function handleLoginSubmit(e) {
     e.preventDefault();
@@ -192,9 +206,9 @@ function App() {
   }
 
   const filteredEntries = entries.filter(entry => {
-  const titleMatch = entry.title.toLowerCase().includes(searchQuery.toLowerCase());
-  const tagMatch = entry.tags.some(tag =>
-    tag.toLowerCase().includes(searchQuery.toLowerCase())
+  const titleMatch = entry.title?.toLowerCase().includes(searchQuery.toLowerCase() ?? false);
+  const tagMatch = Array.isArray(entry.tags) && entry.tags.some(tag =>
+    tag?.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   const matchesSearch = titleMatch || tagMatch;

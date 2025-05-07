@@ -11,6 +11,5 @@ import {z} from "zod";
         tags: z.array(z.string()),
         notes: z.string(),
         date: z.string().optional(),
-        userId: z.coerce.number(),
       });
       

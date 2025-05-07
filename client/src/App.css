@@ -21,6 +21,7 @@
 
   h1 {
     font-size: 1.5rem;
+    font-family: 'Courier New', Courier, monospace;
   }
 
   .modal-content p {
@@ -98,6 +99,7 @@ body, html{
   font-size: 1.8rem;
   margin-bottom: 1rem;
   align-self: flex-start;
+  font-family: 'Courier New', Courier, monospace;
 }
 
 .close-button {
